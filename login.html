@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ThunderByte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --blue-950: #0f172a;
+
+            --white: #ffffff;
+            --gray-500: #6b7280;
+
+            --radius: 12px;
+            --red-500: #ef4444;
+
+            --card-bg: rgba(15, 23, 42, 0.9);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --input-bg: rgba(255, 255, 255, 0.06);
+            --input-border: rgba(255, 255, 255, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--blue-950); 
+            color: var(--text-primary); 
+            line-height: 1.6;
+        }
+
+        /* ========== LOGIN MAIN SECTION ========== */
+        .login-main {
+            position: relative;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            background: url('https://i.ibb.co/RkrqdNTh/background.png') center/cover no-repeat;
+            overflow: hidden;
+        }
+
+        .login-main::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.70); 
+            z-index: 0;
+        }
+
+        /* ========== SNOW CANVAS ========== */
+        #snowCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        /* ========== BREADCRUMB (Top-Left) ========== */
+        .breadcrumb {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .breadcrumb a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover { color: var(--blue-500); }
+
+        .breadcrumb .separator { color: rgba(255, 255, 255, 0.4); }
+
+        .breadcrumb .current { color: var(--blue-500); font-weight: 700; }
+
+        /* ========== LOGIN CARD ========== */
+        .login-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+            padding: 40px 35px;
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
+        }
+
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header .logo-img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            border-radius: 16px;
+            padding: 8px;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+        .login-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); margin-bottom: 5px; }
+        .login-header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;
+        }
+        .input-wrapper { position: relative; }
+        .input-wrapper i {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .form-control {
+            width: 100%; padding: 12px 14px 12px 40px; 
+            background: var(--input-bg);
+            border: 1px solid var(--input-border); 
+            border-radius: 8px;
+            font-size: 0.95rem; font-family: inherit; 
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.35); }
+        .form-control:focus {
+            outline: none; 
+            border-color: var(--blue-500);
+            background: rgba(255, 255, 255, 0.09);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .input-wrapper:focus-within i { color: var(--blue-500); }
+
+        .forgot-password-wrapper {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        .forgot-password {
+            color: var(--blue-500);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .forgot-password:hover { color: var(--blue-400); text-decoration: underline; }
+
+        .login-btn {
+            width: 100%; padding: 14px; 
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-500)); 
+            color: #fff; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 1rem; cursor: pointer; 
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .login-btn:hover { 
+            background: linear-gradient(135deg, var(--blue-700), var(--blue-600)); 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .login-btn:disabled { 
+            background: var(--gray-500); 
+            cursor: not-allowed; 
+            transform: none; 
+            box-shadow: none;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+        }
+
+        .signup-link { text-align: center; margin-top: 25px; font-size: 0.9rem; color: var(--text-secondary); }
+        .signup-link a { color: var(--blue-500); font-weight: 700; text-decoration: none; transition: color 0.2s; }
+        .signup-link a:hover { color: var(--blue-400); text-decoration: underline; }
+
+        /* ========== FOOTER ========== */
+        .page-footer {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 3;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .page-footer .fbrand { font-weight: 700; color: #fff; }
+        .page-footer .dev { font-weight: 700; color: var(--blue-400); }
+
+        /* ========== MOBILE RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .login-main {
+                padding: 20px 16px;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .breadcrumb {
+                position: fixed;
+                top: 14px;
+                left: 14px;
+                transform: none;
+                padding: 7px 13px;
+                font-size: 0.8rem;
+                gap: 7px;
+                max-width: calc(100% - 28px);
+                z-index: 10;
+            }
+
+            .breadcrumb a { gap: 5px; }
+
+            .login-container {
+                padding: 26px 20px 28px;
+                max-width: 100%;
+            }
+
+            .login-header { margin-bottom: 22px; }
+            .login-header .logo-img { width: 58px; height: 58px; margin-bottom: 12px; }
+            .login-header h2 { font-size: 1.45rem; }
+            .login-header p { font-size: 0.85rem; }
+
+            .form-control { padding: 12px 12px 12px 38px; font-size: 16px; }
+            .login-btn { padding: 13px; font-size: 0.95rem; }
+
+            .signup-link { margin-top: 20px; font-size: 0.85rem; }
+
+            .page-footer {
+                position: fixed;
+                bottom: 10px;
+                font-size: 0.75rem;
+                padding: 0 16px;
+                z-index: 10;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .breadcrumb { font-size: 0.75rem; padding: 6px 10px; gap: 5px; }
+            .login-container { padding: 22px 16px 24px; }
+            .login-header h2 { font-size: 1.3rem; }
+        }
+
+        @media (max-height: 700px) and (orientation: landscape) {
+            .login-main { padding: 16px; }
+            .login-container { padding: 22px 24px; }
+            .login-header { margin-bottom: 16px; }
+            .login-header .logo-img { width: 48px; height: 48px; margin-bottom: 8px; }
+            .form-group { margin-bottom: 14px; }
+            .forgot-password-wrapper { margin-bottom: 14px; }
+            .signup-link { margin-top: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #snowCanvas { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-main">
+
+        <!-- Realistic soft snow canvas -->
+        <canvas id="snowCanvas" aria-hidden="true"></canvas>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="https://thunderbyte.bond"><i class="fas fa-home"></i> Home</a>
+            <span class="separator">/</span>
+            <span class="current">Login</span>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-container">
+            <div class="login-header">
+                <img src="https://i.ibb.co/5gV9v5TR/logo.png" alt="ThunderByte Logo" class="logo-img">
+                <h2>Welcome Back</h2>
+                <p>Log in to manage your ThunderByte services</p>
+            </div>
+
+            <form id="loginForm">
+                <div id="errorMessage" class="error-message"></div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <div class="forgot-password-wrapper">
+                    <a href="https://thunderbyte.bond/forgot-password" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" id="loginBtn" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <div class="signup-link">
+                Don't have an account? <a href="https://thunderbyte.bond/register">Register here</a>
+            </div>
+        </div>
+
+        <footer class="page-footer">
+            &copy; <span id="year">2026</span> <span class="fbrand">ThunderByte</span> | Designed by <span class="dev">BrineAjay</span>
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            /* ============================================================
+               REALISTIC SOFT SNOWFALL
+               - Lightweight canvas particles (circles with soft radial glow)
+               - Gentle drift, natural sway, subtle size/opacity variety
+               - Auto-resizes, pauses when tab hidden, respects reduced motion
+            ============================================================ */
+            const canvas = document.getElementById('snowCanvas');
+            const ctx = canvas.getContext('2d');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            let W = 0, H = 0, dpr = 1;
+            let flakes = [];
+            let rafId = null;
+            let lastTime = 0;
+
+            // Light flake count — desktop = 45, mobile = 22
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const FLAKE_COUNT = isMobile ? 22 : 45;
+
+            function resize() {
+                dpr = Math.min(window.devicePixelRatio || 1, 2);
+                W = canvas.clientWidth;
+                H = canvas.clientHeight;
+                canvas.width = Math.floor(W * dpr);
+                canvas.height = Math.floor(H * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function rand(min, max) { return Math.random() * (max - min) + min; }
+
+            /* Depth affects size, speed, blur/alpha — feels 3D and natural */
+            function createFlake(initial) {
+                const depth = Math.random(); // 0 = far, 1 = near
+                const radius = depth * 2.1 + 0.9;             // 0.9px → 3px
+                const speed = depth * 0.55 + 0.22;            // fall speed px/frame
+                const swayAmp = depth * 22 + 6;               // horizontal sway
+                const swayFreq = rand(0.0006, 0.0014);        // sway speed
+                const alpha = depth * 0.55 + 0.25;            // 0.25 → 0.8
+                const blur = depth > 0.6 ? 0 : 1;             // near flakes crisp, far ones soft
+
+                return {
+                    x: rand(0, W),
+                    y: initial ? rand(-H, H) : rand(-40, -10),
+                    r: radius,
+                    speed: speed,
+                    swayAmp: swayAmp,
+                    swayFreq: swayFreq,
+                    swayPhase: rand(0, Math.PI * 2),
+                    alpha: alpha,
+                    blur: blur,
+                    depth: depth
+                };
+            }
+
+            function buildFlakes() {
+                flakes = [];
+                for (let i = 0; i < FLAKE_COUNT; i++) {
+                    flakes.push(createFlake(true));
+                }
+            }
+
+            function drawFlake(f, time) {
+                // Gentle horizontal sway (sine wave)
+                const sway = Math.sin(time * f.swayFreq + f.swayPhase) * f.swayAmp;
+
+                ctx.save();
+                ctx.globalAlpha = f.alpha;
+
+                // Soft halo glow (feels airy, not emoji-like)
+                const grad = ctx.createRadialGradient(
+                    f.x + sway, f.y, 0,
+                    f.x + sway, f.y, f.r * 3
+                );
+                grad.addColorStop(0, 'rgba(255,255,255,' + f.alpha + ')');
+                grad.addColorStop(0.4, 'rgba(220,235,255,' + (f.alpha * 0.5) + ')');
+                grad.addColorStop(1, 'rgba(255,255,255,0)');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(f.x + sway, f.y, f.r * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Solid core for crispness (near flakes only)
+                if (f.depth > 0.35) {
+                    ctx.globalAlpha = Math.min(1, f.alpha * 1.3);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(f.x + sway, f.y, f.r * 0.55, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            function update(delta) {
+                const factor = delta / 16.67; // normalize to 60fps
+                for (let i = 0; i < flakes.length; i++) {
+                    const f = flakes[i];
+                    f.y += f.speed * factor;
+                    // Reset when off screen — recycle as new flake
+                    if (f.y - f.r * 3 > H + 20) {
+                        flakes[i] = createFlake(false);
+                    }
+                }
+            }
+
+            function render(time) {
+                ctx.clearRect(0, 0, W, H);
+                for (let i = 0; i < flakes.length; i++) {
+                    drawFlake(flakes[i], time);
+                }
+            }
+
+            function loop(time) {
+                if (!lastTime) lastTime = time;
+                const delta = Math.min(time - lastTime, 48); // clamp big jumps
+                lastTime = time;
+
+                update(delta);
+                render(time);
+
+                rafId = requestAnimationFrame(loop);
+            }
+
+            function start() {
+                if (reducedMotion) return;
+                resize();
+                buildFlakes();
+                cancelAnimationFrame(rafId);
+                lastTime = 0;
+                rafId = requestAnimationFrame(loop);
+            }
+
+            function stop() {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+
+            /* Debounced resize */
+            let resizeTimer = null;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    resize();
+                    buildFlakes();
+                }, 180);
+            });
+
+            /* Pause when tab hidden (saves CPU) */
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) stop();
+                else start();
+            });
+
+            /* Init */
+            if (document.readyState === 'complete') start();
+            else window.addEventListener('load', start);
+        })();
+
+        /* ---------- Login form logic ---------- */
+        (function() {
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+
+            function showError(msg) {
+                errorMessage.textContent = msg;
+                errorMessage.style.display = 'block';
+            }
+            function hideError() {
+                errorMessage.style.display = 'none';
+                errorMessage.textContent = '';
+            }
+
+            [emailInput, passwordInput].forEach(el => {
+                el.addEventListener('input', hideError);
+            });
+
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                hideError();
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!email) { showError('Please enter your email address.'); emailInput.focus(); return; }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please enter a valid email address.'); emailInput.focus(); return; }
+                if (!password) { showError('Please enter your password.'); passwordInput.focus(); return; }
+                if (password.length < 6) { showError('Password must be at least 6 characters.'); passwordInput.focus(); return; }
+
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+                setTimeout(() => {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    showError('Demo mode — connect your auth API to enable real login.');
+                }, 1400);
+            });
+        })();
+    </script>
+</body>
+</html>

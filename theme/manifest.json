@@ -1,0 +1,37 @@
+{
+  "name": "ThunderByte",
+  "version": "1.0.0",
+  "description": "Dark glass-card theme for Pterodactyl Panel with snow animation, Inter font, and branded login page.",
+  "author": "ThunderByte",
+  "pterodactyl_version": ">=1.15.0",
+  "files": [
+    {
+      "source": "resources/scripts/components/auth/LoginContainer.tsx",
+      "destination": "resources/scripts/components/auth/LoginContainer.tsx"
+    },
+    {
+      "source": "resources/scripts/components/auth/LoginFormContainer.tsx",
+      "destination": "resources/scripts/components/auth/LoginFormContainer.tsx"
+    },
+    {
+      "source": "resources/scripts/components/auth/LoginInput.tsx",
+      "destination": "resources/scripts/components/auth/LoginInput.tsx"
+    },
+    {
+      "source": "resources/scripts/components/auth/Snowfall.tsx",
+      "destination": "resources/scripts/components/auth/Snowfall.tsx"
+    },
+    {
+      "source": "resources/views/templates/auth/core.blade.php",
+      "destination": "resources/views/templates/auth/core.blade.php"
+    },
+    {
+      "source": "public/assets/thunderbyte/background.png",
+      "destination": "public/assets/thunderbyte/background.png"
+    },
+    {
+      "source": "public/assets/thunderbyte/logo.png",
+      "destination": "public/assets/thunderbyte/logo.png"
+    }
+  ]
+}

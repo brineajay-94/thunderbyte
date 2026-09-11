@@ -1,0 +1,13 @@
+# Dev reference (Pterodactyl panel clone — not part of the theme)
+panel/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Secrets
+*.token
+*key.txt
