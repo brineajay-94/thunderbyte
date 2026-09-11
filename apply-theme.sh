@@ -9,8 +9,9 @@
 #   sudo bash apply-theme.sh update    # non-interactive
 #   sudo bash apply-theme.sh status    # non-interactive
 #
-# One-liner:
-#   curl -sL https://raw.githubusercontent.com/brineajay-94/thunderbyte/master/apply-theme.sh | sudo bash
+# One-liner (download first, then run — interactive menu needs a real terminal):
+#   curl -sL https://raw.githubusercontent.com/brineajay-94/thunderbyte/master/apply-theme.sh -o /tmp/thunderbyte.sh
+#   sudo bash /tmp/thunderbyte.sh
 #
 
 set -euo pipefail
@@ -37,18 +38,22 @@ ASSET_FILES=(
 )
 
 # ---------------------------------------------------------------- colors
-C_RESET='\033[0m'
-C_BOLD='\033[1m'
-C_GREEN='\033[32m'
-C_YELLOW='\033[33m'
-C_RED='\033[31m'
-C_BLUE='\033[96m'
-C_GRAY='\033[90m'
+if [ -t 1 ]; then
+    C_RESET=$'\e[0m'
+    C_BOLD=$'\e[1m'
+    C_GREEN=$'\e[32m'
+    C_YELLOW=$'\e[33m'
+    C_RED=$'\e[31m'
+    C_BLUE=$'\e[96m'
+    C_GRAY=$'\e[90m'
+else
+    C_RESET='' C_BOLD='' C_GREEN='' C_YELLOW='' C_RED='' C_BLUE='' C_GRAY=''
+fi
 
-info()  { printf "${C_BLUE}[INFO]${C_RESET}  %s\n" "$*"; }
-ok()    { printf "${C_GREEN}[ OK ]${C_RESET}  %s\n" "$*"; }
-warn()  { printf "${C_YELLOW}[WARN]${C_RESET}  %s\n" "$*"; }
-fail()  { printf "${C_RED}[FAIL]${C_RESET}  %s\n" "$*"; }
+info()  { printf '%s[INFO]%s  %s\n' "$C_BLUE"   "$C_RESET" "$*"; }
+ok()    { printf '%s[ OK ]%s  %s\n' "$C_GREEN"  "$C_RESET" "$*"; }
+warn()  { printf '%s[WARN]%s  %s\n' "$C_YELLOW" "$C_RESET" "$*"; }
+fail()  { printf '%s[FAIL]%s  %s\n' "$C_RED"    "$C_RESET" "$*"; }
 
 # ---------------------------------------------------------------- helpers
 require_root() {
@@ -194,18 +199,18 @@ status() {
         installed="${C_YELLOW}NOT INSTALLED${C_RESET}"
     fi
 
-    echo
-    echo "  ${C_BOLD}ThunderByte Theme Manager${C_RESET}"
-    echo "  ──────────────────────────────────────────────"
-    echo "  Panel directory : $PANEL_DIR"
-    echo "  Panel user      : $PANEL_USER"
-    echo "  Theme status    : $installed"
+    printf '\n'
+    printf '  %sThunderByte Theme Manager%s\n' "$C_BOLD" "$C_RESET"
+    printf '  ──────────────────────────────────────────────\n'
+    printf '  Panel directory : %s\n' "$PANEL_DIR"
+    printf '  Panel user      : %s\n' "$PANEL_USER"
+    printf '  Theme status    : %b\n' "$installed"
     if [ -d "$BACKUP_DIR" ]; then
-        echo "  Original backup : present ($BACKUP_DIR)"
+        printf '  Original backup : present (%s)\n' "$BACKUP_DIR"
     else
-        echo "  Original backup : none"
+        printf '  Original backup : none\n'
     fi
-    echo
+    printf '\n'
 }
 
 install_theme() {
@@ -216,7 +221,7 @@ install_theme() {
     fix_permissions
     build_panel
     clear_caches
-    echo
+    printf '\n'
     ok "${C_BOLD}ThunderByte theme installed successfully!${C_RESET}"
     info "Visit your panel's login page: https://your-panel/auth/login"
     if [ -d "$THEME_TMP" ]; then
@@ -234,7 +239,7 @@ uninstall_theme() {
     fix_permissions
     build_panel
     clear_caches
-    echo
+    printf '\n'
     ok "${C_BOLD}ThunderByte theme uninstalled. Original panel restored.${C_RESET}"
 }
 
@@ -246,33 +251,38 @@ update_theme() {
     fix_permissions
     build_panel
     clear_caches
-    echo
+    printf '\n'
     ok "${C_BOLD}ThunderByte theme updated to latest version!${C_RESET}"
 }
 
 # ---------------------------------------------------------------- menu
 run_menu() {
     local choice
+    if ! [ -t 0 ]; then
+        fail "Interactive menu needs a terminal (stdin is not a TTY)."
+        warn "Download the script first, then run:  sudo bash /tmp/thunderbyte.sh"
+        warn "Or use a command directly:  sudo bash apply-theme.sh install|uninstall|update|status"
+        exit 1
+    fi
     while true; do
         status
-        echo "  ${C_BOLD}Choose an option:${C_RESET}"
-        echo "    ${C_GREEN}1${C_RESET}) Install theme"
-        echo "    ${C_YELLOW}2${C_RESET}) Uninstall theme"
-        echo "    ${C_BLUE}3${C_RESET}) Update theme"
-        echo "    ${C_GRAY}4${C_RESET}) Show status"
-        echo "    ${C_RED}Q${C_RESET}) Quit"
-        printf "\n  Enter your choice [1-4/q]: "
+        printf '  %sChoose an option:%s\n' "$C_BOLD" "$C_RESET"
+        printf '    %s1%s) Install theme\n'  "$C_GREEN"  "$C_RESET"
+        printf '    %s2%s) Uninstall theme\n' "$C_YELLOW" "$C_RESET"
+        printf '    %s3%s) Update theme\n'    "$C_BLUE"   "$C_RESET"
+        printf '    %s4%s) Show status\n'     "$C_GRAY"   "$C_RESET"
+        printf '    %sQ%s) Quit\n'            "$C_RED"    "$C_RESET"
+        printf '\n  Enter your choice [1-4/q]: '
         read -r choice
         case "$choice" in
             1) install_theme ;;
             2) uninstall_theme ;;
             3) update_theme ;;
             4) status ;;
-            q|Q) echo; info "Goodbye!"; exit 0 ;;
+            q|Q) printf '\n'; info "Goodbye!"; exit 0 ;;
             *) warn "Invalid choice: $choice" ;;
         esac
-        echo
-        printf "  Press Enter to return to the menu… "
+        printf '\n  Press Enter to return to the menu… '
         read -r _
     done
 }
