@@ -1,0 +1,17 @@
+cd /var/www/pterodactyl
+
+# Remove root-owned folders
+rm -rf storage/framework/cache/data/*
+
+# Make sure ownership is correct
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+# Run artisan commands as www-data (very important)
+sudo -u www-data php artisan optimize:clear
+sudo -u www-data php artisan cache:clear
+sudo -u www-data php artisan config:clear
+sudo -u www-data php artisan view:clear
+
+# Check
+ls -la storage/framework/cache/data/
