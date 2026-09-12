@@ -1,200 +1,655 @@
-# ThunderByte Pterodactyl Theme — Continuation & Safety Guide
+# ThunderByte Pterodactyl Theme — Safe Workflow & Error Prevention Guide
 
-## 1. Project Overview
-
-This project customizes a Pterodactyl Panel into a premium hosting panel branded as **ThunderByte**.
-
-### Main panel
-
-* Panel path: `/var/www/pterodactyl`
-* Panel URL: `https://free.thunderbyte.bond`
-* Main website: `https://thunderbyte.bond`
-
-### Brand
-
-* Brand name: **ThunderByte**
-* Designer credit: **Designed by BrineAjay**
-
-### Current visual direction
-
-The desired theme is:
-
-* Premium
-* Modern
-* Dark
-* Dark blue / black
-* Glassmorphism
-* Subtle blue glow
-* Minecraft hosting aesthetic
-* Professional rather than overly bright
-* Responsive on desktop and mobile
-
-Do NOT turn the panel into a completely bright-blue interface.
+> **Purpose:** This document is the mandatory workflow for continuing the ThunderByte Pterodactyl theme project in a future chat.
+>
+> **Primary goal:** Make visual/theme changes without causing Laravel 500 errors, broken TSX/TypeScript, failed Webpack builds, broken Blueprint functionality, or loss of the working panel.
 
 ---
 
-# 2. VERY IMPORTANT SAFETY RULE
+# 🚨 1. MOST IMPORTANT RULE
 
-This panel was previously broken by an incorrect TypeScript/TSX modification.
+## NEVER MODIFY THE PANEL BY GUESSING.
 
-A previous bad edit caused:
+Every future change must follow:
 
 ```text
-SyntaxError: LoginFormContainer.tsx
-Missing semicolon
+IDENTIFY
+   ↓
+INSPECT
+   ↓
+BACKUP
+   ↓
+EXACT EDIT
+   ↓
+VERIFY
+   ↓
+BUILD
+   ↓
+TEST
 ```
 
-and earlier edits also caused a Laravel 500 error.
+Never do:
 
-Therefore:
+```text
+GUESS FILE
+   ↓
+GLOBAL REPLACE
+   ↓
+BUILD
+   ↓
+HOPE
+```
 
-## NEVER blindly replace large blocks of TSX.
+---
 
-Before modifying a source file:
+# 2. PANEL INFORMATION
 
-1. Inspect the actual current file.
-2. Make a backup.
-3. Identify the exact block.
-4. Replace only that block.
-5. Verify the resulting file.
-6. Run the production build.
-7. Only then continue to another file.
+```text
+Panel Path:
+ /var/www/pterodactyl
 
-Do not assume the file has the same contents as an earlier chat.
+Panel:
+ https://free.thunderbyte.bond
+
+Main Website:
+ https://thunderbyte.bond
+
+Brand:
+ ThunderByte
+
+Designer:
+ BrineAjay
+```
+
+Environment:
+
+```text
+Ubuntu
+Nginx 1.24.0
+PHP 8.3.33
+Laravel 12.64.0
+Node.js 22.23.2
+Yarn 1.22.22
+Webpack 5.103.0
+```
 
 ---
 
 # 3. GOLDEN BACKUP
 
-A known-good full panel backup exists:
+The known-good full backup is:
 
 ```text
 /root/pterodactyl-backup-20260912-005736.tar.gz
 ```
 
-Size was approximately:
+Approximately:
 
 ```text
 129 MB
 ```
 
-This backup MUST NOT be deleted, overwritten, or modified.
+## DO NOT DELETE IT.
 
-It was created after the registration extension was installed.
+## DO NOT OVERWRITE IT.
 
-If something becomes seriously broken, this is the primary restore point.
+## DO NOT MODIFY IT.
 
----
-
-# 4. DO NOT DELETE THE BACKUP
-
-Never run commands such as:
+Before major work, verify that it still exists:
 
 ```bash
-rm /root/pterodactyl-backup-20260912-005736.tar.gz
+ls -lh /root/pterodactyl-backup-20260912-005736.tar.gz
 ```
 
-Do not overwrite it with another archive.
+Expected:
 
-Additional individual backups may exist under `/root`.
+```text
+-rw-r--r-- ... /root/pterodactyl-backup-20260912-005736.tar.gz
+```
 
 ---
 
-# 5. Environment
+# 4. BEFORE EVERY CHANGE
 
-Known environment:
-
-```text
-OS: Ubuntu
-Nginx: 1.24.0
-PHP: 8.3.33
-Laravel: 12.64.0
-Node.js: 22.23.2
-Yarn: 1.22.22
-Webpack: 5.103.0
-```
-
-Panel directory:
+First check the panel:
 
 ```bash
-/var/www/pterodactyl
+cd /var/www/pterodactyl && pwd && git status 2>/dev/null || true
+```
+
+Then identify the file that actually controls the requested UI.
+
+Do not assume.
+
+For example:
+
+```text
+Login page
+→ LoginFormContainer.tsx
+
+Dashboard footer
+→ PageContentBlock.tsx
+
+Global background
+→ tailwind.css
+
+Admin footer
+→ admin.blade.php
 ```
 
 ---
 
-# 6. Build Command
+# 5. SOURCE FILES
 
-After changing frontend TypeScript/TSX/CSS files, use:
-
-```bash
-cd /var/www/pterodactyl && yarn build:production
-```
-
-A successful build should end with something similar to:
-
-```text
-webpack ... compiled successfully
-Done
-```
-
-Do NOT consider a theme edit complete if the production build fails.
-
----
-
-# 7. Build Warnings
-
-The build may display warnings such as:
-
-```text
-[baseline-browser-mapping] The data in this module is over two months old.
-```
-
-or:
-
-```text
-Browserslist: browsers data (caniuse-lite) is 10 months old.
-```
-
-or:
-
-```text
-(node:...) [DEP0180] DeprecationWarning
-```
-
-These warnings are not automatically build failures.
-
-The important part is whether Webpack ends with:
-
-```text
-compiled successfully
-```
-
-If it says:
-
-```text
-ERROR in ...
-Module build failed ...
-```
-
-STOP and fix the source error before doing anything else.
-
----
-
-# 8. Global Theme CSS
-
-The global CSS entry file is:
+## Global CSS
 
 ```text
 resources/scripts/assets/tailwind.css
 ```
 
-It is imported by:
+## App entry/import
 
 ```text
 resources/scripts/components/App.tsx
 ```
 
-The current global ThunderByte background was added to `tailwind.css`.
+## Login page
+
+```text
+resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+## Dashboard/general content wrapper
+
+```text
+resources/scripts/components/elements/PageContentBlock.tsx
+```
+
+## Blueprint attribution
+
+```text
+resources/scripts/blueprint/extends/Attribution.tsx
+```
+
+## Admin layout
+
+```text
+resources/views/layouts/admin.blade.php
+```
+
+## English translations
+
+```text
+resources/lang/en/strings.php
+```
+
+---
+
+# 6. NEVER EDIT GENERATED ASSETS
+
+Do not directly edit:
+
+```text
+public/assets/
+```
+
+For example:
+
+```text
+public/assets/auth.c305026f.js
+```
+
+These are generated files.
+
+Correct:
+
+```text
+resources/scripts/...
+        ↓
+yarn build:production
+        ↓
+public/assets/...
+```
+
+Incorrect:
+
+```text
+public/assets/auth....js
+        ↓
+manual editing
+```
+
+---
+
+# 7. NEVER USE GLOBAL REPLACEMENTS
+
+Do NOT run commands such as:
+
+```bash
+grep -Rl "Pterodactyl" . | xargs sed -i 's/Pterodactyl/ThunderByte/g'
+```
+
+Do NOT globally replace:
+
+```text
+Pterodactyl
+pterodactyl.io
+Pterodactyl Software
+Blueprint
+```
+
+These names may exist in legitimate application code.
+
+Global replacement can break:
+
+* routes
+* APIs
+* package names
+* configuration
+* update systems
+* Blueprint
+* dependencies
+* documentation
+* application logic
+
+Only change the specific visible UI component.
+
+---
+
+# 8. BACKUP BEFORE EDITING
+
+Before modifying a source file:
+
+```bash
+cp FILE /root/FILE.before-change-$(date +%Y%m%d-%H%M%S)
+```
+
+Example:
+
+```bash
+cd /var/www/pterodactyl && \
+cp resources/scripts/components/auth/LoginFormContainer.tsx \
+/root/LoginFormContainer.tsx.before-change-$(date +%Y%m%d-%H%M%S)
+```
+
+This creates a separate emergency copy.
+
+---
+
+# 9. INSPECT BEFORE EDITING
+
+Never write a replacement before seeing the current file.
+
+Example:
+
+```bash
+cd /var/www/pterodactyl && \
+sed -n '1,140p' resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+For a specific section:
+
+```bash
+cd /var/www/pterodactyl && \
+grep -n -B10 -A20 -E 'Pterodactyl|ThunderByte|BrineAjay|Attribution' \
+resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+The exact current code must be used for the replacement.
+
+---
+
+# 10. EXACT-BLOCK REPLACEMENT ONLY
+
+Preferred method:
+
+```text
+old exact block
+        ↓
+new exact block
+```
+
+The script must refuse to edit if the expected block is not found.
+
+Example:
+
+```python
+from pathlib import Path
+
+p = Path("FILE")
+s = p.read_text()
+
+old = """EXACT CURRENT CODE"""
+
+new = """EXACT NEW CODE"""
+
+if old not in s:
+    raise SystemExit(
+        "ERROR: Expected block was not found. "
+        "NO CHANGES WERE MADE."
+    )
+
+p.write_text(s.replace(old, new, 1))
+
+print("SUCCESS: Exact block replaced.")
+```
+
+This is much safer than broad `sed` commands.
+
+---
+
+# 11. NEVER FORCE A FAILED REPLACEMENT
+
+If you see:
+
+```text
+ERROR: Expected block was not found.
+NO CHANGES WERE MADE.
+```
+
+STOP.
+
+This means the current source is different from what was expected.
+
+Do not:
+
+* remove more text
+* use a larger regex
+* replace the whole file
+* guess the structure
+
+Instead:
+
+```text
+Inspect current source
+        ↓
+Find actual block
+        ↓
+Create new exact replacement
+```
+
+---
+
+# 12. TSX / TYPESCRIPT SAFETY
+
+TSX files are especially sensitive.
+
+A syntax error reported here:
+
+```tsx
+forwardRef<HTMLFormElement, Props>
+```
+
+does NOT necessarily mean that line is wrong.
+
+The actual problem may be above it.
+
+Common causes:
+
+```text
+Missing >
+Missing </tag>
+Missing }
+Missing )
+Missing ]
+Broken JSX
+Broken string
+Broken template literal
+Text accidentally inserted outside JSX
+```
+
+If Webpack reports a TSX syntax error:
+
+## STOP ALL FURTHER EDITS.
+
+Inspect the entire surrounding section.
+
+Example:
+
+```bash
+cd /var/www/pterodactyl && \
+sed -n '1,100p' resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+---
+
+# 13. ONE CHANGE AT A TIME
+
+Do not modify:
+
+```text
+Login
++
+Dashboard
++
+Admin
++
+Global CSS
+```
+
+all in one operation.
+
+Instead:
+
+```text
+Change Login
+↓
+Build
+↓
+Test
+
+Change Dashboard
+↓
+Build
+↓
+Test
+
+Change Admin
+↓
+Build
+↓
+Test
+```
+
+This makes troubleshooting much easier.
+
+---
+
+# 14. BUILD AFTER FRONTEND CHANGES
+
+After modifying:
+
+```text
+.ts
+.tsx
+.css
+```
+
+run:
+
+```bash
+cd /var/www/pterodactyl && yarn build:production
+```
+
+Do not consider the change complete until the build succeeds.
+
+---
+
+# 15. WHAT COUNTS AS A SUCCESSFUL BUILD?
+
+Good:
+
+```text
+compiled successfully
+Done
+```
+
+Bad:
+
+```text
+ERROR in
+Module build failed
+SyntaxError
+TS error
+Failed to compile
+```
+
+Warnings may exist.
+
+Errors must be fixed before continuing.
+
+---
+
+# 16. NEVER HIDE BUILD ERRORS
+
+During troubleshooting, avoid:
+
+```bash
+2>/dev/null
+```
+
+Do not hide errors.
+
+The complete error output is useful for determining what actually failed.
+
+---
+
+# 17. AFTER SUCCESSFUL BUILD
+
+Clear Laravel caches when appropriate:
+
+```bash
+cd /var/www/pterodactyl && php artisan optimize:clear
+```
+
+Then refresh the browser:
+
+```text
+Ctrl + Shift + R
+```
+
+If necessary:
+
+```text
+Ctrl + F5
+```
+
+Also test in an incognito/private window if an old asset appears to be cached.
+
+---
+
+# 18. DO NOT ASSUME CACHE IS THE PROBLEM
+
+If the browser still shows old content:
+
+First check:
+
+```text
+Source code
+↓
+Generated assets
+↓
+Browser
+```
+
+Check source first.
+
+Then:
+
+```bash
+cd /var/www/pterodactyl && \
+grep -RliE 'old text|old URL' \
+public/assets --include='*.js' 2>/dev/null | head -20
+```
+
+Only after confirming the source and generated assets are correct should browser caching be considered.
+
+---
+
+# 19. LOGIN FOOTER
+
+Login source:
+
+```text
+resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+Old footer previously contained:
+
+```tsx
+Pterodactyl&reg;
+https://pterodactyl.io
+© 2015 - current year
+<Attribution />
+```
+
+Desired visible branding:
+
+```text
+ThunderByte
+
+Designed by BrineAjay
+```
+
+with the ThunderByte logo.
+
+Preferred logo:
+
+```text
+https://i.ibb.co/1tYDgZr2/logo.png
+```
+
+---
+
+# 20. THUNDERBYTE LOGO
+
+Current preferred logo:
+
+```text
+https://i.ibb.co/1tYDgZr2/logo.png
+```
+
+Older logo:
+
+```text
+https://i.ibb.co/5gV9v5TR/logo.png
+```
+
+Unless specifically requested, use the current preferred logo.
+
+---
+
+# 21. THUNDERBYTE BACKGROUND
+
+Preferred background:
+
+```text
+https://i.ibb.co/RkrqdNTh/background.png
+```
+
+Design direction:
+
+```text
+Dark
+Black
+Dark blue
+Glass
+Subtle blue glow
+Premium
+Minecraft hosting
+```
+
+Do not make the entire interface bright blue.
+
+---
+
+# 22. GLOBAL CSS
+
+File:
+
+```text
+resources/scripts/assets/tailwind.css
+```
 
 Current intended styling:
 
@@ -220,109 +675,987 @@ body {
 }
 ```
 
-A backup of the pre-theme CSS exists:
+Backup:
 
 ```text
 /root/tailwind.css.before-thunderbyte
 ```
 
-Do not overwrite the backup.
+---
+
+# 23. BLUEPRINT SAFETY
+
+Blueprint is installed.
+
+Known information:
+
+```text
+Engine: solstice
+Version: beta-2026-08
+Folder: /var/www/pterodactyl
+URL: https://free.thunderbyte.bond
+Locale: en
+Timezone: Etc/UTC
+```
+
+A registration extension is installed.
+
+## NEVER REMOVE BLUEPRINT JUST TO REMOVE ITS FOOTER TEXT.
+
+Only modify visible attribution.
+
+Do not delete:
+
+```text
+resources/scripts/blueprint/
+```
+
+Do not remove Blueprint routes.
+
+Do not modify Blueprint internals unless the requested feature actually requires it.
 
 ---
 
-# 9. ThunderByte Assets
+# 24. ADMIN FOOTER
 
-## Current ThunderByte logo
+Admin footer:
 
-Use this logo for the current footer/login branding:
+```text
+resources/views/layouts/admin.blade.php
+```
+
+Previously:
+
+```php
+Copyright &copy; 2015 - {{ date('Y') }}
+<a href="https://pterodactyl.io/">Pterodactyl Software</a>
+```
+
+Inspect first:
+
+```bash
+cd /var/www/pterodactyl && \
+sed -n '150,190p' resources/views/layouts/admin.blade.php
+```
+
+Only edit the exact visible footer block.
+
+---
+
+# 25. TRANSLATION FILE
+
+Possible copyright translation:
+
+```text
+resources/lang/en/strings.php
+```
+
+Example:
+
+```php
+'copyright' => '&copy; 2015 - :year Pterodactyl Software'
+```
+
+Do not change this just because the string exists.
+
+First determine whether the requested page actually uses it.
+
+---
+
+# 26. DASHBOARD FOOTER
+
+Dashboard/general footer:
+
+```text
+resources/scripts/components/elements/PageContentBlock.tsx
+```
+
+Inspect:
+
+```bash
+cd /var/www/pterodactyl && \
+sed -n '1,160p' resources/scripts/components/elements/PageContentBlock.tsx
+```
+
+Do not change the login footer when the problem is actually the dashboard footer.
+
+---
+
+# 27. IF A PAGE STILL SHOWS OLD BRANDING
+
+Search only the relevant source directories:
+
+```bash
+cd /var/www/pterodactyl && \
+grep -RniE 'Pterodactyl|pterodactyl\.io|Blueprint' \
+resources/scripts resources/views \
+--include='*.tsx' \
+--include='*.ts' \
+--include='*.blade.php' \
+--include='*.php' \
+2>/dev/null | head -100
+```
+
+Then identify:
+
+```text
+Which file?
+Which component?
+Which page?
+Which exact text?
+```
+
+Do not replace everything returned by grep.
+
+---
+
+# 28. LARAVEL 500 ERROR
+
+If the panel suddenly displays:
+
+```text
+500 Server Error
+```
+
+STOP THEME EDITING.
+
+Do not make another random change.
+
+Check:
+
+```bash
+cd /var/www/pterodactyl && \
+tail -100 storage/logs/laravel-*.log
+```
+
+Then:
+
+```bash
+tail -100 /var/log/nginx/error.log
+```
+
+The actual error must be identified.
+
+---
+
+# 29. COMMON PREVIOUS 500 ERROR
+
+A previous broken edit caused:
+
+```text
+View [Designed by brineajay.dashboard.dashboard] not found
+```
+
+This happened because branding text was accidentally inserted into Laravel/Blade structure incorrectly.
+
+Therefore:
+
+## NEVER insert plain branding text into a Blade directive or view reference.
+
+For Blade:
+
+```php
+@extends(...)
+@include(...)
+view(...)
+```
+
+must remain valid PHP/Blade syntax.
+
+Branding belongs inside actual HTML content.
+
+---
+
+# 30. IF THE PANEL BREAKS AFTER AN EDIT
+
+First identify the exact changed file.
+
+If an individual backup exists:
+
+```text
+/root/FILE.before-change-TIMESTAMP
+```
+
+restore that file.
+
+Then rebuild if it was frontend code.
+
+Example:
+
+```bash
+cp /root/LoginFormContainer.tsx.before-change-TIMESTAMP \
+/var/www/pterodactyl/resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+Then:
+
+```bash
+cd /var/www/pterodactyl && yarn build:production
+```
+
+---
+
+# 31. FULL RESTORE
+
+Only use the full backup when necessary.
+
+Backup:
+
+```text
+/root/pterodactyl-backup-20260912-005736.tar.gz
+```
+
+Before a full restore, preserve the current broken directory.
+
+Do not immediately delete it.
+
+The previous successful restore strategy preserved the old directory before extracting the backup.
+
+---
+
+# 32. RESTORING A SINGLE FILE FROM FULL BACKUP
+
+The archive uses:
+
+```text
+pterodactyl/...
+```
+
+not:
+
+```text
+var/www/pterodactyl/...
+```
+
+Example:
+
+```bash
+cd /var/www/pterodactyl && \
+tar -xOzf /root/pterodactyl-backup-20260912-005736.tar.gz \
+pterodactyl/resources/scripts/components/auth/LoginFormContainer.tsx \
+> resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+Use this when only one file needs restoring.
+
+---
+
+# 33. NEVER DELETE THE BACKUP DURING TROUBLESHOOTING
+
+Never run:
+
+```bash
+rm /root/pterodactyl-backup-20260912-005736.tar.gz
+```
+
+unless the user explicitly decides to remove it after creating another verified backup.
+
+---
+
+# 34. FILE PERMISSIONS
+
+After a major restore, verify ownership:
+
+```bash
+cd /var/www/pterodactyl && \
+stat -c '%U:%G %n' .
+```
+
+The panel files should normally be owned appropriately for the web server.
+
+Do not recursively change ownership unless necessary.
+
+If a restore specifically requires it, verify the existing server setup before using:
+
+```bash
+chown -R www-data:www-data /var/www/pterodactyl
+```
+
+Do not blindly run permission changes on every theme edit.
+
+---
+
+# 35. DO NOT RUN UNNECESSARY COMMANDS
+
+Do not randomly run:
+
+```text
+composer update
+npm update
+yarn upgrade
+apt upgrade
+blueprint update
+database migrations
+```
+
+just because a theme change is being made.
+
+Theme changes should normally require only:
+
+```text
+source edit
+↓
+yarn build:production
+↓
+optional optimize:clear
+```
+
+---
+
+# 36. DO NOT CHANGE DEPENDENCIES FOR VISUAL CHANGES
+
+A CSS or JSX branding change should not require installing random packages.
+
+If a dependency really is required:
+
+```text
+Identify why
+↓
+Check compatibility
+↓
+Back up first
+↓
+Make the dependency change separately
+```
+
+---
+
+# 37. ONE-COMMAND REQUIREMENT
+
+The user prefers copy-pasteable commands.
+
+A command may contain multiple safe steps, but it must:
+
+1. Enter the correct directory.
+2. Create a backup.
+3. Verify the expected source.
+4. Perform an exact replacement.
+5. Verify the result.
+6. Build.
+7. Stop if anything fails.
+
+Use:
+
+```bash
+set -e
+```
+
+or equivalent error handling when appropriate.
+
+A failed step must not silently continue.
+
+---
+
+# 38. SAFE COMMAND TEMPLATE
+
+Preferred structure:
+
+```bash
+cd /var/www/pterodactyl && \
+set -e && \
+cp "FILE" "/root/FILE.before-change-$(date +%Y%m%d-%H%M%S)" && \
+python3 - <<'PY'
+from pathlib import Path
+
+p = Path("FILE")
+s = p.read_text()
+
+old = """EXACT CURRENT BLOCK"""
+new = """EXACT NEW BLOCK"""
+
+if old not in s:
+    raise SystemExit("ERROR: Exact block not found. No changes made.")
+
+p.write_text(s.replace(old, new, 1))
+
+print("SUCCESS: Exact replacement completed.")
+PY
+yarn build:production
+```
+
+---
+
+# 39. NEVER BLINDLY USE `sed -i`
+
+This is risky:
+
+```bash
+sed -i 's/.../.../g'
+```
+
+especially on TSX and Blade files.
+
+It can replace more occurrences than intended.
+
+Prefer Python exact-block replacement.
+
+---
+
+# 40. BEFORE BUILDING
+
+Quick source check:
+
+```bash
+cd /var/www/pterodactyl && \
+git diff -- resources/scripts/ 2>/dev/null || true
+```
+
+If the panel is not a Git repository, this may show nothing.
+
+That is okay.
+
+The important thing is to inspect the modified file manually.
+
+---
+
+# 41. AFTER BUILDING
+
+Check the build result.
+
+Then:
+
+```bash
+cd /var/www/pterodactyl && \
+php artisan optimize:clear
+```
+
+Then browser:
+
+```text
+Ctrl + Shift + R
+```
+
+---
+
+# 42. IF BUILD FAILS
+
+Do NOT:
+
+```text
+edit again immediately
+```
+
+Instead:
+
+```text
+Read complete error
+↓
+Identify file
+↓
+Inspect surrounding code
+↓
+Compare with backup
+↓
+Fix exact issue
+↓
+Build again
+```
+
+If the cause is unclear, restore the changed file from its immediate backup.
+
+---
+
+# 43. IF THE BROWSER IS BROKEN BUT BUILD SUCCEEDS
+
+Check:
+
+```text
+1. Browser console
+2. Network tab
+3. Laravel log
+4. Nginx log
+5. Generated assets
+```
+
+Do not immediately modify backend code.
+
+A frontend build succeeding does not guarantee the page will render correctly.
+
+---
+
+# 44. RESPONSIVE DESIGN SAFETY
+
+For login/theme changes, always test:
+
+```text
+Desktop
+Mobile
+Small mobile
+```
+
+Check:
+
+```text
+No unwanted horizontal scrolling
+No unwanted vertical scrolling
+Logo not oversized
+Buttons remain accessible
+Text does not overflow
+Glass card remains visible
+Background does not destroy readability
+```
+
+---
+
+# 45. LOGIN DESIGN TARGET
+
+Final login design:
+
+```text
+┌──────────────────────────────────────┐
+│ Home / Login                         │
+│                                      │
+│          ThunderByte Logo            │
+│                                      │
+│          Login Card                  │
+│                                      │
+│          Email                       │
+│          Password                    │
+│          Login                       │
+│                                      │
+│       Forgot Password                │
+│       Register                       │
+│                                      │
+│          ThunderByte                 │
+│       Designed by BrineAjay          │
+└──────────────────────────────────────┘
+```
+
+Visual style:
+
+```text
+Dark
+Glassmorphism
+Blue accents
+Premium
+Responsive
+```
+
+---
+
+# 46. CURRENT BRANDING
+
+Use:
+
+```text
+ThunderByte
+```
+
+Correct capitalization:
+
+```text
+ThunderByte
+```
+
+Designer:
+
+```text
+BrineAjay
+```
+
+Do not use:
+
+```text
+thunderbyte
+Thunder byte
+Thunder byte Hosting
+brineajay
+Brine Ajay
+```
+
+unless specifically requested.
+
+---
+
+# 47. ASSET RULE
+
+If an external image URL is used, verify that the URL is exactly the intended asset.
+
+Current logo:
 
 ```text
 https://i.ibb.co/1tYDgZr2/logo.png
 ```
 
-## Older ThunderByte logo
-
-```text
-https://i.ibb.co/5gV9v5TR/logo.png
-```
-
-Prefer the newer logo:
-
-```text
-https://i.ibb.co/1tYDgZr2/logo.png
-```
-
-unless specifically instructed otherwise.
-
-## Background
-
-Current background asset:
+Current background:
 
 ```text
 https://i.ibb.co/RkrqdNTh/background.png
 ```
 
-There was also an image-host page:
+Do not replace the URL with another image-host URL unless explicitly requested.
+
+---
+
+# 48. WHAT TO DO IN A NEW CHAT
+
+At the beginning of a future chat:
 
 ```text
-https://ibb.co/C3CfD6KJ
+Read THUNDERBYTE_THEME_SAFE_WORKFLOW.md first.
+
+I am continuing the ThunderByte Pterodactyl theme.
+
+Follow the safe workflow in this document.
+
+Do not guess the source file.
+Inspect the current code first.
+Back up every file before editing.
+Use exact-block replacements.
+Never globally replace Pterodactyl.
+Never edit public/assets directly.
+Build with yarn build:production.
+Stop on any build error.
+Do not delete the full backup.
+```
+
+Then give the requested change.
+
+---
+
+# 49. FUTURE THEME INSTALLER
+
+Eventually the manual theme work should be converted into a GitHub-hosted installer.
+
+Desired menu:
+
+```text
+====================================
+       THUNDERBYTE THEME
+====================================
+
+[1] Install Theme
+[2] Uninstall Theme
+[3] Update Theme
+[4] Exit
+
+Select an option:
+```
+
+The installer should:
+
+```text
+Detect Pterodactyl
+↓
+Detect current theme version
+↓
+Create backup
+↓
+Install only required files
+↓
+Verify files
+↓
+Build frontend
+↓
+Clear cache
+↓
+Show success/failure
 ```
 
 ---
 
-# 10. Login Footer — IMPORTANT
+# 50. INSTALLER SAFETY REQUIREMENTS
 
-The old login footer was found in:
+The future installer must NEVER:
 
 ```text
-resources/scripts/components/auth/LoginFormContainer.tsx
+Delete the entire Pterodactyl directory
+Delete the main backup
+Globally replace Pterodactyl
+Modify generated assets manually
+Overwrite unknown files without backup
+Continue after a failed build
+Hide errors
 ```
 
-The exact old content was:
+It should have:
 
-```tsx
-<a
-    rel={'noopener nofollow noreferrer'}
-    href={'https://pterodactyl.io'}
-    target={'_blank'}
-    css={tw`no-underline text-neutral-500 hover:text-neutral-300`}
+```text
+Backup
+Version detection
+Install
+Update
+Uninstall
+Rollback
+Error handling
+Build verification
+```
+
+---
+
+# 51. UNINSTALL REQUIREMENT
+
+Uninstall should restore the original files changed by the theme.
+
+It should NOT reinstall the entire panel unless explicitly necessary.
+
+Preferred:
+
+```text
+Theme installed
+↓
+Modified files recorded
+↓
+Original files backed up
+↓
+Uninstall
+↓
+Restore only modified files
+```
+
+---
+
+# 52. UPDATE REQUIREMENT
+
+Update should:
+
+```text
+Detect current version
+↓
+Create backup
+↓
+Compare theme files
+↓
+Update required files
+↓
+Build
+↓
+Verify
+```
+
+If build fails:
+
+```text
+Rollback
+```
+
+---
+
+# 53. VERSION FILE
+
+Future theme should maintain something like:
+
+```text
+THUNDERBYTE_THEME_VERSION
+```
+
+Example:
+
+```text
+1.0.0
+```
+
+This allows the installer to know:
+
+```text
+Not installed
+Installed
+Old version
+Current version
+```
+
+---
+
+# 54. FINAL PRE-CHANGE CHECKLIST
+
+Before modifying anything:
+
+```text
+[ ] I know exactly which page is being changed.
+[ ] I know the exact source file.
+[ ] I inspected the current source.
+[ ] I created a backup.
+[ ] I know the exact block being replaced.
+[ ] I am not doing a global replacement.
+[ ] I am not editing public/assets.
+[ ] I am not changing Blueprint unnecessarily.
+```
+
+---
+
+# 55. FINAL POST-CHANGE CHECKLIST
+
+After modifying:
+
+```text
+[ ] Exact replacement succeeded.
+[ ] Old unwanted code is gone.
+[ ] New code exists.
+[ ] TSX/Blade structure is valid.
+[ ] yarn build:production succeeded.
+[ ] No Webpack errors.
+[ ] Cache cleared if necessary.
+[ ] Browser hard refreshed.
+[ ] Desktop tested.
+[ ] Mobile tested.
+[ ] Panel login tested.
+[ ] No Laravel 500 error.
+```
+
+---
+
+# 56. EMERGENCY CHECKLIST
+
+If something suddenly breaks:
+
+```text
+STOP
+↓
+DO NOT MAKE ANOTHER RANDOM EDIT
+↓
+READ ERROR
+↓
+IDENTIFY LAST CHANGED FILE
+↓
+RESTORE THAT FILE
+↓
+BUILD
+↓
+TEST
+```
+
+If still broken:
+
+```text
+Check Laravel logs
+Check Nginx logs
+Check frontend build
+Check generated assets
+```
+
+Only then consider a full restore.
+
+---
+
+# 57. ABSOLUTE RULES
+
+## Rule 1
+
+**Never edit without inspecting.**
+
+## Rule 2
+
+**Never edit without a backup.**
+
+## Rule 3
+
+**Never globally replace Pterodactyl branding.**
+
+## Rule 4
+
+**Never manually edit `public/assets`.**
+
+## Rule 5
+
+**Never delete Blueprint just to remove branding.**
+
+## Rule 6
+
+**Never continue after a build error.**
+
+## Rule 7
+
+**Never assume the reported line is the actual TSX error.**
+
+## Rule 8
+
+**Never overwrite the main backup.**
+
+## Rule 9
+
+**One theme change at a time.**
+
+## Rule 10
+
+**If unsure, inspect first instead of guessing.**
+
+---
+
+# 58. MASTER WORKFLOW
+
+Every ThunderByte theme modification must follow this:
+
+```text
+┌───────────────────────────────┐
+│       USER REQUEST             │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ IDENTIFY CORRECT PAGE          │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ IDENTIFY CORRECT SOURCE FILE   │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ INSPECT CURRENT SOURCE         │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ CREATE INDIVIDUAL BACKUP       │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ EXACT BLOCK REPLACEMENT        │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ VERIFY SOURCE                 │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│ yarn build:production         │
+└───────────────┬───────────────┘
+                ↓
+        ┌───────┴───────┐
+        │               │
+      ERROR           SUCCESS
+        │               │
+        ↓               ↓
+     STOP          CLEAR CACHE
+        │               │
+        ↓               ↓
+     RESTORE          REFRESH
+        │               │
+        └───────┬───────┘
+                ↓
+             TEST
+                ↓
+        ┌───────────────┐
+        │ NEXT CHANGE   │
+        └───────────────┘
+```
+
+---
+
+# 59. FINAL INSTRUCTION TO FUTURE ASSISTANTS
+
+> **Do not try to be clever by making a quick global edit.**
 >
-    Pterodactyl&reg;
-</a>
-&nbsp;&copy; 2015 - {new Date().getFullYear()}&nbsp;
-```
+> This panel has previously been broken by incorrect theme modifications.
+>
+> The correct approach is slower but safer:
+>
+> **Inspect → Backup → Exact Edit → Verify → Build → Test.**
+>
+> If the expected source does not match, stop and inspect it.
+>
+> If the build fails, stop and fix the actual error.
+>
+> If the page breaks, restore the last changed file before making another change.
+>
+> The working panel and the full backup are more important than completing a theme change quickly.
 
-This produced:
+---
 
-```text
-Pterodactyl® © 2015 - 2026
-```
+# END
 
-The desired replacement is:
+**ThunderByte Theme Project**
 
 ```text
 ThunderByte
 Designed by BrineAjay
 ```
 
-with a small ThunderByte logo.
-
-Logo:
-
-```text
-https://i.ibb.co/1tYDgZr2/logo.png
-```
-
----
-
-# 11. Current Login Footer Design
-
-Desired structure:
-
-```tsx
-<p css={tw`text-center text-neutral-500 text-xs flex flex-col items-center justify-center gap-1`}>
-    <img
-        src={'https://i.ibb.co/1tYDgZr2/logo.png'}
-        alt={'ThunderByte'}
-        css={tw`w-8 h-8 object-contain opacity-90`}
-```
+**Safety first. Theme second.**
