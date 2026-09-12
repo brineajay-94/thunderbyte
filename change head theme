@@ -1,0 +1,8 @@
+cd /var/www/pterodactyl && \
+cp resources/views/templates/wrapper.blade.php resources/views/templates/wrapper.blade.php.bak && \
+cp resources/views/layouts/admin.blade.php resources/views/layouts/admin.blade.php.bak && \
+sed -i 's/#0e4688/#071426/g' resources/views/templates/wrapper.blade.php resources/views/layouts/admin.blade.php && \
+php artisan view:clear && \
+php artisan optimize:clear && \
+echo "===== NEW THEME COLORS =====" && \
+grep -RIn 'theme-color' resources/views/templates/wrapper.blade.php resources/views/layouts/admin.blade.php
