@@ -1,0 +1,328 @@
+# ThunderByte Pterodactyl Theme — Continuation & Safety Guide
+
+## 1. Project Overview
+
+This project customizes a Pterodactyl Panel into a premium hosting panel branded as **ThunderByte**.
+
+### Main panel
+
+* Panel path: `/var/www/pterodactyl`
+* Panel URL: `https://free.thunderbyte.bond`
+* Main website: `https://thunderbyte.bond`
+
+### Brand
+
+* Brand name: **ThunderByte**
+* Designer credit: **Designed by BrineAjay**
+
+### Current visual direction
+
+The desired theme is:
+
+* Premium
+* Modern
+* Dark
+* Dark blue / black
+* Glassmorphism
+* Subtle blue glow
+* Minecraft hosting aesthetic
+* Professional rather than overly bright
+* Responsive on desktop and mobile
+
+Do NOT turn the panel into a completely bright-blue interface.
+
+---
+
+# 2. VERY IMPORTANT SAFETY RULE
+
+This panel was previously broken by an incorrect TypeScript/TSX modification.
+
+A previous bad edit caused:
+
+```text
+SyntaxError: LoginFormContainer.tsx
+Missing semicolon
+```
+
+and earlier edits also caused a Laravel 500 error.
+
+Therefore:
+
+## NEVER blindly replace large blocks of TSX.
+
+Before modifying a source file:
+
+1. Inspect the actual current file.
+2. Make a backup.
+3. Identify the exact block.
+4. Replace only that block.
+5. Verify the resulting file.
+6. Run the production build.
+7. Only then continue to another file.
+
+Do not assume the file has the same contents as an earlier chat.
+
+---
+
+# 3. GOLDEN BACKUP
+
+A known-good full panel backup exists:
+
+```text
+/root/pterodactyl-backup-20260912-005736.tar.gz
+```
+
+Size was approximately:
+
+```text
+129 MB
+```
+
+This backup MUST NOT be deleted, overwritten, or modified.
+
+It was created after the registration extension was installed.
+
+If something becomes seriously broken, this is the primary restore point.
+
+---
+
+# 4. DO NOT DELETE THE BACKUP
+
+Never run commands such as:
+
+```bash
+rm /root/pterodactyl-backup-20260912-005736.tar.gz
+```
+
+Do not overwrite it with another archive.
+
+Additional individual backups may exist under `/root`.
+
+---
+
+# 5. Environment
+
+Known environment:
+
+```text
+OS: Ubuntu
+Nginx: 1.24.0
+PHP: 8.3.33
+Laravel: 12.64.0
+Node.js: 22.23.2
+Yarn: 1.22.22
+Webpack: 5.103.0
+```
+
+Panel directory:
+
+```bash
+/var/www/pterodactyl
+```
+
+---
+
+# 6. Build Command
+
+After changing frontend TypeScript/TSX/CSS files, use:
+
+```bash
+cd /var/www/pterodactyl && yarn build:production
+```
+
+A successful build should end with something similar to:
+
+```text
+webpack ... compiled successfully
+Done
+```
+
+Do NOT consider a theme edit complete if the production build fails.
+
+---
+
+# 7. Build Warnings
+
+The build may display warnings such as:
+
+```text
+[baseline-browser-mapping] The data in this module is over two months old.
+```
+
+or:
+
+```text
+Browserslist: browsers data (caniuse-lite) is 10 months old.
+```
+
+or:
+
+```text
+(node:...) [DEP0180] DeprecationWarning
+```
+
+These warnings are not automatically build failures.
+
+The important part is whether Webpack ends with:
+
+```text
+compiled successfully
+```
+
+If it says:
+
+```text
+ERROR in ...
+Module build failed ...
+```
+
+STOP and fix the source error before doing anything else.
+
+---
+
+# 8. Global Theme CSS
+
+The global CSS entry file is:
+
+```text
+resources/scripts/assets/tailwind.css
+```
+
+It is imported by:
+
+```text
+resources/scripts/components/App.tsx
+```
+
+The current global ThunderByte background was added to `tailwind.css`.
+
+Current intended styling:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#app {
+    min-height: 100%;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(0, 102, 255, 0.16), transparent 32%),
+        radial-gradient(circle at 85% 15%, rgba(0, 183, 255, 0.10), transparent 28%),
+        radial-gradient(circle at 50% 100%, rgba(20, 60, 140, 0.14), transparent 38%),
+        linear-gradient(135deg, #02050d 0%, #061326 48%, #02040a 100%) !important;
+    background-attachment: fixed;
+}
+
+body {
+    color-scheme: dark;
+}
+```
+
+A backup of the pre-theme CSS exists:
+
+```text
+/root/tailwind.css.before-thunderbyte
+```
+
+Do not overwrite the backup.
+
+---
+
+# 9. ThunderByte Assets
+
+## Current ThunderByte logo
+
+Use this logo for the current footer/login branding:
+
+```text
+https://i.ibb.co/1tYDgZr2/logo.png
+```
+
+## Older ThunderByte logo
+
+```text
+https://i.ibb.co/5gV9v5TR/logo.png
+```
+
+Prefer the newer logo:
+
+```text
+https://i.ibb.co/1tYDgZr2/logo.png
+```
+
+unless specifically instructed otherwise.
+
+## Background
+
+Current background asset:
+
+```text
+https://i.ibb.co/RkrqdNTh/background.png
+```
+
+There was also an image-host page:
+
+```text
+https://ibb.co/C3CfD6KJ
+```
+
+---
+
+# 10. Login Footer — IMPORTANT
+
+The old login footer was found in:
+
+```text
+resources/scripts/components/auth/LoginFormContainer.tsx
+```
+
+The exact old content was:
+
+```tsx
+<a
+    rel={'noopener nofollow noreferrer'}
+    href={'https://pterodactyl.io'}
+    target={'_blank'}
+    css={tw`no-underline text-neutral-500 hover:text-neutral-300`}
+>
+    Pterodactyl&reg;
+</a>
+&nbsp;&copy; 2015 - {new Date().getFullYear()}&nbsp;
+```
+
+This produced:
+
+```text
+Pterodactyl® © 2015 - 2026
+```
+
+The desired replacement is:
+
+```text
+ThunderByte
+Designed by BrineAjay
+```
+
+with a small ThunderByte logo.
+
+Logo:
+
+```text
+https://i.ibb.co/1tYDgZr2/logo.png
+```
+
+---
+
+# 11. Current Login Footer Design
+
+Desired structure:
+
+```tsx
+<p css={tw`text-center text-neutral-500 text-xs flex flex-col items-center justify-center gap-1`}>
+    <img
+        src={'https://i.ibb.co/1tYDgZr2/logo.png'}
+        alt={'ThunderByte'}
+        css={tw`w-8 h-8 object-contain opacity-90`}
+```
