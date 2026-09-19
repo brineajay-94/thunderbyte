@@ -1,1 +1,25 @@
+cd /var/www/pterodactyl && \
+BACKUP_DIR="/root/thunderbyte-favicon-build-backup-$(date +%Y%m%d-%H%M%S)" && \
+mkdir -p "$BACKUP_DIR" && \
+cp -a public/favicon.ico public/favicons "$BACKUP_DIR/" 2>/dev/null || true && \
+echo "Backup created at: $BACKUP_DIR" && \
 
+# Download ThunderByte favicon
+curl -sL "https://raw.githubusercontent.com/brineajay-94/thunderbyte/master/Assets/favicon.png" -o /tmp/tb-favicon.png && \
+
+# Replace all favicon files
+cp /tmp/tb-favicon.png public/favicon.ico && \
+mkdir -p public/favicons && \
+cp /tmp/tb-favicon.png public/favicons/favicon.ico && \
+cp /tmp/tb-favicon.png public/favicons/favicon-16x16.png && \
+cp /tmp/tb-favicon.png public/favicons/favicon-32x32.png && \
+cp /tmp/tb-favicon.png public/favicons/favicon-96x96.png && \
+cp /tmp/tb-favicon.png public/favicons/android-chrome-192x192.png && \
+cp /tmp/tb-favicon.png public/favicons/android-chrome-512x512.png && \
+cp /tmp/tb-favicon.png public/favicons/apple-touch-icon.png && \
+cp /tmp/tb-favicon.png public/favicons/mstile-150x150.png && \
+find public -type f \( -name "*favicon*" -o -name "*apple-touch*" -o -name "*android-chrome*" \) -exec cp /tmp/tb-favicon.png {} \; && \
+
+chown -R www-data:www-data public/favicon.ico public/favicons && \
+echo "Favicon files replaced. Starting yarn build..." && \
+yarn build:production
