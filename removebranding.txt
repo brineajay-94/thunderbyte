@@ -1,0 +1,78 @@
+cd /var/www/pterodactyl && \
+BACKUP_DIR="/root/thunderbyte-hide-messages-backup-$(date +%Y%m%d-%H%M%S)" && \
+mkdir -p "$BACKUP_DIR" && \
+cp -a .blueprint/extensions/nebula/views/wrapper/theme/panel.blade.php "$BACKUP_DIR/" && \
+echo "Backup created at: $BACKUP_DIR" && \
+python3 - <<'PY'
+from pathlib import Path
+
+path = Path(".blueprint/extensions/nebula/views/wrapper/theme/panel.blade.php")
+content = path.read_text()
+
+extra_css = r'''
+  /* Hide "There are no servers associated with your account." */
+  p:contains("There are no servers"),
+  div:contains("There are no servers associated with your account"),
+  .ScreenBlock___StyledP-sc-1f87kcm-6,
+  p.ScreenBlock___StyledP-sc-1f87kcm-6 {
+    display: none !important;
+  }
+
+  /* Hide Pterodactyl + Blueprint footer credits */
+  p:contains("Pterodactyl"),
+  a[href*="pterodactyl.io"],
+  span:contains("Blueprint"),
+  .Attribution,
+  p.text-neutral-500,
+  .LoginFormContainer___StyledP-sc-cyh04c-7,
+  footer, 
+  .text-xs.text-neutral-500 {
+    display: none !important;
+  }
+
+  /* More specific hide for the copyright line */
+  body p {
+    /* will be refined below */
+  }
+'''
+
+# Better approach - use attribute and text based selectors that actually work
+extra_css = r'''
+  /* Hide empty server message */
+  .ScreenBlock___StyledP-sc-1f87kcm-6,
+  p.ScreenBlock___StyledP-sc-1f87kcm-6,
+  div.ScreenBlock___StyledDiv2-sc-1f87kcm-2 p {
+    display: none !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide Pterodactyl / Blueprint copyright footer */
+  a[href*="pterodactyl.io"],
+  .Attribution,
+  p.text-neutral-500.text-xs,
+  .text-neutral-500.text-xs,
+  p:has(a[href*="pterodactyl"]),
+  div:has(> p > a[href*="pterodactyl"]) {
+    display: none !important;
+  }
+'''
+
+if "Hide empty server message" not in content:
+    content = content.replace("</style>", extra_css + "\n</style>")
+    path.write_text(content)
+    print("Messages hidden successfully")
+else:
+    print("Styles already present")
+PY
+
+chown www-data:www-data .blueprint/extensions/nebula/views/wrapper/theme/panel.blade.php && \
+php artisan view:clear && \
+echo "" && \
+echo "==============================================" && \
+echo " SUCCESS – Empty server message + footer hidden" && \
+echo " Backup: $BACKUP_DIR" && \
+echo " Hard-refresh the dashboard (Ctrl+Shift+R)" && \
+echo "=============================================="
