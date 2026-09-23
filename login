@@ -111,7 +111,7 @@ new_content = r'''@if(Auth::check() != true)
   .LoginFormContainer__Container-sc-cyh04c-0 .LoginFormContainer___StyledH-sc-cyh04c-1,
   .LoginFormContainer__Container-sc-cyh04c-0 h1,
   .LoginFormContainer__Container-sc-cyh04c-0 h2 {
-    content: url("https://i.ibb.co/k2YqmsrD/logo.png") !important;
+    content: url("https://i.ibb.co/N2trFmDb/logo-1.png") !important;
     height: 52px !important;
     max-width: 100% !important;
     margin: 0 auto 20px auto !important;
