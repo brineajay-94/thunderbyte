@@ -5,7 +5,7 @@ cp -a public/favicon.ico public/favicons "$BACKUP_DIR/" 2>/dev/null || true && \
 echo "Backup created at: $BACKUP_DIR" && \
 
 # Download ThunderByte favicon
-curl -sL "https://raw.githubusercontent.com/brineajay-94/thunderbyte/master/Assets/favicon.png" -o /tmp/tb-favicon.png && \
+curl -sL "https://raw.githubusercontent.com/brineajay-94/thunderbyte/master/Assets/logo.png" -o /tmp/tb-favicon.png && \
 
 # Replace all favicon files
 cp /tmp/tb-favicon.png public/favicon.ico && \
